@@ -1,0 +1,75 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'spartan',sans-serif;
+}
+h2{
+    font-size: 46px;
+    line-height: 54px;
+    color: #222;
+}
+h4{
+    font-size: 20px;
+    color: #222;
+}
+body{
+    width: 100%;
+}
+
+/* Header Part */
+
+#header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 50px; /*first top and button and second for left and right*/
+    background: #e3e6f3;
+    box-shadow: 0 5px 15px /*x y and redius*/ rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    position: sticky;
+    top: 0;
+    left:0;
+}
+#nevbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#header li{      /* target <li> tag */
+    list-style: none;
+    padding: 0 20px;
+}
+#header li a{     /* target <a> tag inside <li> tag*/
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    transition: 0.3s;       /* for smoothness of hover */
+}
+#header li a:hover,
+#header li a.active{
+    color: #f80a16;
+}
+#header li button{
+    background-color: aqua;
+}
+
+#hero{
+    background-image: url("vehi.jpg");
+    height: 84.7vh;
+    width: 100%;
+    background-position: top 25% right 0;
+    background-size: cover;
+    padding: 0 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+#hero h4{
+    padding-bottom: 15px;
+}
+#hero h1{
+    color: #088178;
+}
