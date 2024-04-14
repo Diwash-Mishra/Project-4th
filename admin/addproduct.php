@@ -131,7 +131,7 @@ input#submit{
     &emsp;&emsp;<label for="image">Image:</label><br>
     <input type="file" id="file" name="file" /> <br><br>
     &emsp;&emsp; <label for="detail">Product Information:</label><br>
-    <input type="text" id="detail" name="detail" /> <br><br>
+    <input type="textbox" id="detail" name="detail" /> <br><br>
     <input type="submit" name="signup" id="submit" value="Add"/>
     </div>    
 </fieldset>

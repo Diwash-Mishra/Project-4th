@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,11 +36,16 @@
         <a href="#"><img src="Purano.png" class="logo" alt=""></a>
         <div>
             <ul id="nevbar">
-                <li><a  href="Home.html">Home</a></li>
+                <li><a  href="Home.php">Home</a></li>
                 <li><a class="active" href="Shop.php">Shop</a> </li>
-                <li><a href="About.html">About</a></li>
-                <li><a href="Contact.html">Contact</a></li>
-                <li><a href="Cart.html"><i class="far fa-shopping-bag"></i></a></li>
+                <li><a href="About.php">About</a></li>
+                <li><a href="Contact.php">Contact</a></li>
+                <?php
+                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin']==true){
+                    echo  $_SESSION['username'];
+                }
+                ?>
+                <br><li><button><a href="logout.php">Log Out</a></li></button>
             </ul>
         </div>
     </section>
@@ -76,7 +84,7 @@ if (is_numeric($id)) {
                         <br><br><br>
                         Contact Us For More Details
                         <br><br>
-                        <button><a href="https://esewa.com.np/#/home">Buy Product</a></button>
+                        <button><a href="buy_product.php">Buy Product</a></button>
                     </div>
                 </div>
             ';

@@ -11,13 +11,15 @@ if(isset($_POST['SignIn'])){
     }
 
     $sql = "SELECT * FROM registration WHERE email='$email'";
-    $_SESSION['username'] = $email;
     $result = $conn->query($sql);
     if($result->num_rows > 0){
         $registration = $result->fetch_assoc();
 
         if(password_verify($password, $registration['password'])){
-            header("location: Home.html");
+            session_start();
+            $_SESSION['loggedin'] = true;
+            $_SESSION['username'] = $email;
+            header("location: Home.php");
             exit();
         } else {
             $error_message = "Password does not match";

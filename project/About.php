@@ -1,5 +1,8 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,29 +16,44 @@
         <a href="#"><img src="Purano.png" class="logo" alt=""></a>
         <div>
             <ul id="nevbar">
-                <li><a class="active" href="Home.html">Home</a></li>
+                <li><a  href="Home.php">Home</a></li>
                 <li><a href="Shop.php">Shop</a> </li>
-                <li><a href="About.html">About</a></li>
-                <li><a href="Contact.html">Contact</a></li>
-                <li><button><a href="logout.php">Log Out</a></li></button>
+                <li><a class="active" href="About.php">About</a></li>
+                <li><a href="Contact.php">Contact</a></li>
+                <?php
+                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin']==true){
+                    echo  $_SESSION['username'];
+                }
+                ?>
+                <br><li><button><a href="logout.php">Log Out</a></li></button>
             </ul>
         </div>
     </section>
 
-    <section id="hero">
-        <h4>Get a Offer</h4>
-        <h2>Super Value Deals</h2>
-        <h1>On All Products</h1>
-        <p>Save Money For Future Use</p>
-        <button><a href="Shop.php">Shop Now</a></button>
+    <section id="page-header" class="about-header">
+        <h2>#KnowUs</h2>
+        <p>Who We Are</p>
     </section>
 
+    <section id="about-head" class="section-p1">
+        <img src="mero.jpg" alt="">
+        <div>
+            <h2>Who We Are</h2><br>
+            <p>We are the students of Damak Multiple Campus. We read in <br> bachelor of Computer Application. We are trying to create a website <br> for our project of 4th semester. It's a website where people can buy the <br> used vehicles also popular in the world named as second hand. Hope our <br> website works well and we get good marks in this subject.</p><br><br>
+            <abbr title="">Buy best vehicles with the help of our website and thanks for choosing us</abbr>
+            <br><br><br>
+            <marquee bgcolor="#ccc" loop="-1" scrollamount="5" width="100%">नया सामान आएपछी हामि चट्टा Email मा Message पठाउछौ है नरिसाउनु होला !</marquee>
+        </div>
+    </section>
 
-            <section id="banner" class="section-m1">
-                <h4>हामी ल्याउछौ</h4>
-                <h2>हजुरको लागी साधन सस्तो मुल्यमा</h2>
-                <button class="normal">Explore More</button>
-            </section>
+    <section id="about-app" class="section-p1">
+        <h1>Download Our <a href="#">App</a> </h1>
+        <div class="video">
+            <video autoplay muted loop src="video.mp4"></video>
+        </div>
+    </section>
+
+    
 
     <footer class="section-p1">
         <div class="col">

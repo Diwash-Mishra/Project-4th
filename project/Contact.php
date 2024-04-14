@@ -1,5 +1,8 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +16,16 @@
         <a href="#"><img src="Purano.png" class="logo" alt=""></a>
         <div>
             <ul id="nevbar">
-                <li><a  href="Home.html">Home</a></li>
-                <li><a  href="Shop.php">Shop</a> </li>
-                <li><a  href="About.html">About</a></li>
-                <li><a class="active" href="Contact.html">Contact</a></li>
-                <li><button><a href="logout.php">Log Out</a></li></button>
+                <li><a  href="Home.php">Home</a></li>
+                <li><a href="Shop.php">Shop</a> </li>
+                <li><a  href="About.php">About</a></li>
+                <li><a class="active" href="Contact.php">Contact</a></li>
+                <?php
+                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin']==true){
+                    echo  $_SESSION['username'];
+                }
+                ?>
+                <br><li><button><a href="logout.php">Log Out</a></li></button>
             </ul>
         </div>
     </section>

@@ -19,7 +19,7 @@ fieldset{
     background-size: cover;
     box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.3);
     color: #fff;
-    padding-bottom: 4%;
+    padding-bottom: 9%;
 }
 .main{
     width: 400px;
