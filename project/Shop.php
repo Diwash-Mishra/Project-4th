@@ -1,5 +1,14 @@
 <?php
 session_start();
+
+// Check if the user clicked the logout button
+if(isset($_GET['logout'])) {
+    // Destroy the session
+    session_destroy();
+    // Redirect to the logout page
+    header("Location: logout.php");
+    exit; // Ensure that no further code is executed after the redirect
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,14 +54,15 @@ session_start();
                     echo  $_SESSION['username'];
                 }
                 ?>
-                <li><button><a href="logout.php">Log Out</a></li></button>
+                <li><button onclick="confirmLogout()">Log Out</button></li>
             </ul>
         </div>
     </section>
 
-    <section id="page-header">
-        <h2>#Stay Home</h2>
-        <p>Save Money For Future Use</p>
+    <section id="banner" class="section-m1">
+        <h4>हामी ल्याउछौ</h4>
+        <h2>हजुरको लागी साधन सस्तो मुल्यमा</h2>
+        <button class="normal">Explore More</button>
     </section>
 
     <section id="product1" class="section-p1">
@@ -104,6 +114,12 @@ echo generateproductDetailsHtml($products);
     <script>
         function showProductDetails(productId) {
             window.location.href = 'prodetail.php?id=' + productId;
+        }
+
+        function confirmLogout() {
+            if(confirm("Are you sure you want to log out?")) {
+                window.location.href = '?logout=true'; // Redirect to logout if confirmed
+            }
         }
     </script>
 
@@ -161,4 +177,4 @@ echo generateproductDetailsHtml($products);
         </div>
     </footer>
 </body>
-</html
+</html>

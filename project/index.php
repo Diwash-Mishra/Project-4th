@@ -149,7 +149,7 @@ h{
             }
             ?>
                 <input style="text-align: center; margin-left: 10%;" type="submit" name="SignIn" value="SignIn" id="Submit"><br><br>
-            <label><a href="#"></a>Forgot Password?</label>&emsp;&emsp;
+            <label><a href="forgot_password.php">Forgot Password?</a></label>&emsp;&emsp;
             <label><a href="register.html">Create an Account</a></label>
         </div>
     </fieldset>

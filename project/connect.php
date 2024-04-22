@@ -3,7 +3,9 @@ $name = $_POST['name'];
 $email = $_POST['email'];
 $number = $_POST['number'];
 $password = $_POST['password'];
-$dob = $_POST['dob'];
+// Retrieve and format date of birth
+$dob = date('Y-m-d', strtotime($_POST['dob'])); 
+
 $country = $_POST['country'];
 $gender = $_POST['gender'];
 // Hash the password

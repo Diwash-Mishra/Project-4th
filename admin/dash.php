@@ -21,7 +21,6 @@ if(isset($_SESSION['username'])){
                 <li><a href="productinfo.php">Product Info</a></li><br>
                 <li><a href="booked.php">Booked Info</a></li><br>
                 <li>
-                        <?php echo $_SESSION["username"]; ?>
                     <a href="logout.php">Log Out</a>
                 </li>
             </ul>

@@ -1,12 +1,8 @@
 <?php
-session_start();
-if(isset($_SESSION['username'])){
-    echo "<script>alert('Are You Sure Want to Logout')</script>";
-    echo "<script>window.location='index.php'</script>";
-session_destroy();
-}else {
-    echo "<script>alert('Are You Sure Want to Logout')</script>";
-           echo "<script>window.location='index.php'</script>";
-}
+session_start(); // Start the session
+session_destroy(); // Destroy the session
 
+// Redirect to index.php or any other page after logout
+header("Location: index.php");
+exit; // Ensure script termination after redirection
 ?>

@@ -1,5 +1,14 @@
 <?php
 session_start();
+
+// Check if the user clicked the logout button
+if(isset($_GET['logout'])) {
+    // Destroy the session
+    session_destroy();
+    // Redirect to the logout page
+    header("Location: logout.php");
+    exit; // Ensure that no further code is executed after the redirect
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,11 +54,17 @@ session_start();
                     echo  $_SESSION['username'];
                 }
                 ?>
-                <br><li><button><a href="logout.php">Log Out</a></li></button>
+                <li><button onclick="confirmLogout()">Log Out</button></li>
             </ul>
         </div>
     </section>
-
+<script>
+    function confirmLogout() {
+            if(confirm("Are you sure you want to log out?")) {
+                window.location.href = '?logout=true'; // Redirect to logout if confirmed
+            }
+        }
+</script>
     <section id="prodetail" class="section-p1">
     <!-- PRODUCT_DETAILS_PLACEHOLDER -->
     <?php

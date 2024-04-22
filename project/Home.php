@@ -1,5 +1,14 @@
 <?php
 session_start();
+
+// Check if the user clicked the logout button
+if(isset($_GET['logout'])) {
+    // Destroy the session
+    session_destroy();
+    // Redirect to the logout page
+    header("Location: logout.php");
+    exit; // Ensure that no further code is executed after the redirect
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -9,7 +18,13 @@ session_start();
     <title>project</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="style.css">
-   
+    <script>
+        function confirmLogout() {
+            if(confirm("Are you sure you want to log out?")) {
+                window.location.href = "?logout=true"; // Redirect to logout if confirmed
+            }
+        }
+    </script>
 </head>
 <body>
     <section id="header">
@@ -21,11 +36,13 @@ session_start();
                 <li><a href="About.php">About</a></li>
                 <li><a href="Contact.php">Contact</a></li>
                 <?php
+                // Check if user is logged in
                 if(isset($_SESSION['loggedin']) && $_SESSION['loggedin']==true){
                     echo  $_SESSION['username'];
                 }
                 ?>
-                <br><li><button><a href="logout.php">Log Out</a></li></button>
+                <br><li><button onclick="confirmLogout()">Log Out</button></li>
+                <!-- Use the GET method to trigger the logout -->
             </ul>
         </div>
     </section>
