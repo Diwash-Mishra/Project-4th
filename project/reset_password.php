@@ -1,73 +1,93 @@
 <?php
-session_start();
+ $conn = new mysqli('localhost', 'root', '', 'project');
 
-// Include database connection
-require_once "db_config.php";
+ // Check connection
+ if ($conn->connect_error) {
+     die("Connection failed: " . $conn->connect_error);
+ }
+// Set Nepali time zone
+date_default_timezone_set('Asia/Kathmandu');
 
-// Check if token is provided in URL
-if (!isset($_GET["token"])) {
-    // Redirect to forgot password page if token is not provided
-    header("Location: forgot_password.php");
-    exit;
-}
+if(isset($_GET['token'])) {
+    $token = $_GET['token'];
+    $sql = "SELECT Email, reset_token_hash, reset_token_expires_at FROM registration WHERE reset_token = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("s", $token);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-$token = $_GET["token"];
+    if($result->num_rows === 1) {
+        $row = $result->fetch_assoc();
+        $email = $row['Email'];
+        $token_hash = $row['reset_token_hash'];
+        $expires_at = $row['reset_token_expires_at'];
 
-// Check if token exists in database
-$stmt = $pdo->prepare("SELECT * FROM users WHERE reset_token = ?");
-$stmt->execute([$token]);
-$user = $stmt->fetch();
+        // Debugging information
+        error_log("Token hash in DB: $token_hash");
+        error_log("Expiration time in DB: $expires_at");
+        error_log("Current time: " . date("Y-m-d H:i:s"));
 
-if (!$user) {
-    $_SESSION["error_message"] = "Invalid or expired token.";
-    header("Location: forgot_password.php");
-    exit;
-}
+        if(password_verify($token, $token_hash) && strtotime($expires_at) > time()) {
+            if(isset($_POST['submit'])) {
+                $new_password = $_POST['password'];
+                // Validate the new password if needed
 
-// Check if form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $new_password = $_POST["new_password"];
-    $confirm_password = $_POST["confirm_password"];
+                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                $sql = "UPDATE registration SET password=?, reset_token=NULL, reset_token_hash=NULL, reset_token_expires_at=NULL WHERE Email=?";
+                $stmt = $db->prepare($sql);
+                $stmt->bind_param("ss", $hashed_password, $email);
+                $stmt->execute();
 
-    // Validate passwords
-    if ($new_password !== $confirm_password) {
-        $_SESSION["error_message"] = "Passwords do not match.";
+                echo '<script>alert("Your password has been reset successfully.");</script>';
+                header("Location: studentlogin.php");
+                exit; // Make sure to exit after redirection
+            }
+        } else {
+            echo '<script>alert("Invalid or expired token.");</script>';
+        }
     } else {
-        // Update password in database
-        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?");
-        $stmt->execute([$hashed_password, $token]);
-
-        $_SESSION["success_message"] = "Password reset successfully. You can now login with your new password.";
-        header("Location: login.php");
-        exit;
+        echo '<script>alert("Invalid token.");</script>';
     }
+} else {
+    echo '<script>alert("No token provided.");</script>';
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
+    <style type="text/css">
+        body {
+            height: 650px;
+            background-image: url("images/7.jpg");
+            background-repeat: no-repeat;
+        }
+        .wrapper {
+            width: 400px;
+            height: 400px;
+            margin: 100px auto;
+            background-color: black;
+            opacity: .8;
+            color: white;
+            padding: 27px 15px;
+        }
+        .form-control {
+            width: 300px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Reset Password</h2>
-    <?php
-    // Display error message if any
-    if (isset($_SESSION["error_message"])) {
-        echo '<p style="color: red;">' . $_SESSION["error_message"] . '</p>';
-        unset($_SESSION["error_message"]);
-    }
-    ?>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?token=$token";?>">
-        <label>New Password:</label>
-        <input type="password" name="new_password" required>
-        <br><br>
-        <label>Confirm Password:</label>
-        <input type="password" name="confirm_password" required>
-        <br><br>
-        <input type="submit" value="Reset Password">
-    </form>
+    <div class="wrapper">
+        <div style="text-align: center;">
+            <h1 style="text-align: center; font-size: 35px; font-family: Lucida Console;">Reset Your Password</h1>
+        </div>
+        <div style="padding-left: 30px;">
+            <form action="" method="post">
+                <input type="password" name="password" class="form-control" placeholder="New Password" required=""><br>
+                <button class="btn btn-default" type="submit" name="submit">Reset Password</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,95 +1,154 @@
 <?php
-session_start();
+    $conn = new mysqli('localhost', 'root', '', 'project');
 
-// Database configuration
-$host = "localhost"; // Your host name
-$dbname = "project"; // Your database name
-$username = "root"; // Your database username
-$password = ""; // Your database password
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+require '../vendor/autoload.php'; // Ensure you have this line if using Composer
 
-try {
-    // Create a PDO instance
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    // Set the PDO error mode to exception
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    // If connection fails, display error message
-    die("Connection failed: " . $e->getMessage());
-}
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-// Function to generate random token
-function generateToken($length = 20) {
+// Set Nepali time zone
+date_default_timezone_set('Asia/Kathmandu');
+
+function generateToken($length = 32) {
     return bin2hex(random_bytes($length));
 }
 
-// Function to send email
-function sendEmail($to, $subject, $message) {
-    // Use your preferred method for sending emails (e.g., PHPMailer, mail() function)
-    // Here, we're using the mail() function for simplicity
-    return mail($to, $subject, $message);
-}
+if (isset($_POST['submit'])) {
+    $email = $_POST['email'];
 
-// Check if form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST["email"];
+    // Validate email existence
+    $check_email_sql = "SELECT * FROM registration WHERE Email = ?";
+    $check_stmt = $db->prepare($check_email_sql);
+    $check_stmt->bind_param("s", $email);
+    $check_stmt->execute();
+    $result = $check_stmt->get_result();
 
-    // Check if email exists in database
-    $stmt = $pdo->prepare("SELECT * FROM registration WHERE email = ?");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
-
-    if ($user) {
-        // Generate token
-        $token = generateToken();
-
-        // Store token in database
-        $stmt = $pdo->prepare("UPDATE registration SET reset_token = ? WHERE email = ?");
-        $stmt->execute([$token, $email]);
-
-        // Compose email message
-        $subject = "Reset Your Password";
-        $message = "Please click the following link to reset your password:\n\n";
-        $message .= "http://example.com/reset_password.php?token=$token";
-
-        // Send email
-        if (sendEmail($email, $subject, $message)) {
-            $_SESSION["success_message"] = "An email with instructions to reset your password has been sent.";
-        } else {
-            $_SESSION["error_message"] = "Failed to send email. Please try again later.";
-        }
-    } else {
-        $_SESSION["error_message"] = "No user found with that email address.";
+    if ($result->num_rows == 0) {
+        echo "
+        <script>
+        alert('Email address does not exist.');
+        window.location.href='index.php';
+        </script>
+        ";
+        exit();
     }
 
-    // Redirect to the same page
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
+    $token = generateToken();
+    $token_hash = password_hash($token, PASSWORD_DEFAULT);
+    $expires_at = date("Y-m-d H:i:s", strtotime('+15 minutes'));
+
+    // Debugging information
+    error_log("Generated token: $token");
+    error_log("Token hash: $token_hash");
+    error_log("Expiration time: $expires_at");
+
+    // Update database with reset token and expiry time
+    $sql = "UPDATE registration SET reset_token=?, reset_token_hash=?, reset_token_expires_at=? WHERE Email=?";
+    $stmt = $db->prepare($sql);
+
+    if ($stmt === false) {
+        die('Prepare failed: ' . htmlspecialchars($db->error));
+    }
+
+    $bind = $stmt->bind_param("ssss", $token, $token_hash, $expires_at, $email);
+
+    if ($bind === false) {
+        die('Bind failed: ' . htmlspecialchars($stmt->error));
+    }
+
+    $execute = $stmt->execute();
+
+    if ($execute === false) {
+        die('Execute failed: ' . htmlspecialchars($stmt->error));
+    }
+
+    if ($stmt->affected_rows === 0) {
+        die('No rows updated. Check if the email exists in the database.');
+    }
+
+    // Send email with reset token
+    $mail = new PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'itspuranopasal@gmail.com';
+        $mail->Password = 'puranopasal9825';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+        // Recipients
+        $mail->setFrom('puranopasal@gmail.com', 'Purano Pasal');
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $mail->addAddress($email);
+        } else {
+            throw new Exception('Invalid email address');
+        }
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Password Reset';
+        $mail->Body    = "Click <a href='http://localhost/library/student/reset_password.php?token=$token'>here</a> to reset your password. This link will expire in 15 minutes.";
+
+        $mail->send();
+        echo "
+        <script>
+        alert('A password reset link has been sent to your email.');
+        window.location.href='index.php';
+        </script>
+        ";
+    } catch (Exception $e) {
+        echo "
+        <script>
+        alert('Message could not be sent. Mailer Error: {$mail->ErrorInfo}');
+        window.location.href='index.php';
+        </script>
+        ";
+    }
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
+    <style type="text/css">
+        body {
+            height: 650px;
+            background-image: url("images/7.jpg");
+            background-repeat: no-repeat;
+        }
+        .wrapper {
+            width: 400px;
+            height: 400px;
+            margin: 100px auto;
+            background-color: black;
+            opacity: .8;
+            color: white;
+            padding: 27px 15px;
+        }
+        .form-control {
+            width: 300px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Forgot Password</h2>
-    <?php
-    // Display success or error messages
-    if (isset($_SESSION["success_message"])) {
-        echo '<p style="color: green;">' . $_SESSION["success_message"] . '</p>';
-        unset($_SESSION["success_message"]);
-    } elseif (isset($_SESSION["error_message"])) {
-        echo '<p style="color: red;">' . $_SESSION["error_message"] . '</p>';
-        unset($_SESSION["error_message"]);
-    }
-    ?>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        <br><br>
-        <input type="submit" value="Reset Password">
-    </form>
+    <div class="wrapper">
+        <div style="text-align: center;">
+            <h1 style="text-align: center; font-size: 35px; font-family: Lucida Console;">Forgot Password</h1>
+        </div>
+        <div style="padding-left: 30px;">
+            <form action="" method="post">
+                <input type="text" name="email" class="form-control" placeholder="Email" required=""><br>
+                <button class="btn btn-default" type="submit" name="submit">Send Reset Link</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
