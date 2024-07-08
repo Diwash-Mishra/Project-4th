@@ -79,7 +79,21 @@ body{
 #header li a.active{
     color: #f80a16;
 }
+#nevbar li button {
+    background-color: #3498db;
+    color: #ffffff;
+    padding: 6px 10px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
+#nevbar li button:hover {
+    background-color: #2980b9;
+}
 /* Css For Home page */
 
 #hero{
@@ -294,35 +308,6 @@ footer .copyright{
     font-weight: 600;
 }
 /* Product details */
-#prodetail{
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content:space-between;
-}
-#prodetail .single-pro-image img{
-    width: 40%;
-}
-
-#prodetail .single-pro-details{
-    padding-right: 10%;
-    margin-top: -25%;
-    margin-left: 60%;
-    
-}
-#prodetail .single-pro-details h2{
-    font-size: 26px;
-}
-#prodetail .single-pro-details button{
-    background-color: #088178;
-    color: #fff;
-    margin-bottom: 10px;
-    margin-left: 8%;
-}
-#prodetail .single-pro-details span{
-    line-height: 25px;
-}
-
 /* about page */
 
 #page-header.about-header{
