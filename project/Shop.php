@@ -21,6 +21,19 @@ if(isset($_GET['logout'])) {
    
 </head>
 <style>
+     /* Style for the logout button */
+ #nevbar li button {
+    background-color: red; /* Button background color */
+    color: white; /* Button text color */
+    padding: 8px 16px; /* Padding inside the button */
+    border: none; /* Remove button border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+#nevbar li button:hover {
+    background-color: darkred; /* Darker red on hover */
+}
     .des button {
     background-color: #3498db; /* Button background color */
     color: #ffffff; /* Button text color */
@@ -38,7 +51,21 @@ if(isset($_GET['logout'])) {
 .des button:hover {
     background-color: #2980b9; /* Change background color on hover */
 }
+.pro-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center items horizontally */
+    gap: 20px; /* Gap between products */
+}
 
+.pro {
+    width: calc(25% - 20px); /* Adjust based on desired width and gap */
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
 </style>
 <body>
     <section id="header">
@@ -64,53 +91,55 @@ if(isset($_GET['logout'])) {
         <h2>हजुरको लागी साधन सस्तो मुल्यमा</h2>
         <button class="normal">Explore More</button>
     </section>
-
+    <center>
+    <h1>List of Products</h1>
     <section id="product1" class="section-p1">
         <div class="pro-container">
-           
- <!-- PRODUCT_DETAILS_PLACEHOLDER -->
-<?php
-// Assuming you have a PDO connection established
-$pdo = new PDO('mysql:host=localhost;dbname=project', 'root', '');
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            <?php
+            // Assuming you have a PDO connection established
+            $pdo = new PDO('mysql:host=localhost;dbname=project', 'root', '');
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$stmt = $pdo->prepare('SELECT * FROM product');
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = $pdo->prepare('SELECT * FROM product');
+            $stmt->execute();
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Function to generate product details HTML
+            // Function to generate product details HTML
+            function generateproductDetailsHtml($products) {
+                $productDetailsHtml = '';
+                $count = 0; // Counter to track products
 
+                foreach ($products as $product) {
+                    $count++;
+                    // Check if 'images' key exists before using it
+                    $imageSrc = isset($product['image']) ? '../admin/images/' . $product['image'] : '';
 
-function generateproductDetailsHtml($products) {
-    $productDetailsHtml = '';
-    foreach ($products as $product) {
-        // Check if 'images' key exists before using it
-        $imageSrc = isset($product['image']) ? '../admin/images/' . $product['image'] : '';
+                    $productDetailsHtml .= '
+                        <div class="pro">
+                            <img src="' . $imageSrc . '" alt="image">
+                            <div class="des">
+                                <span>' . $product['type'] . '</span>
+                                <h5> ' . $product['productname'] . '</h5>
+                                <h4>Price: Rs. ' . $product['price'] . '</h4>
+                                <button onclick="showProductDetails(' . $product['id'] . ')">More Details</button>
+                            </div>
+                        </div>
+                    ';
 
-        $productDetailsHtml .= '
-            <div class="pro">
-                <img src="' . $imageSrc . '" alt="image">
-                <div class="des">
-                    <span>' . $product['type'] . '</span>
-                    <h5> ' . $product['productname'] . '</h5>
-                    <h4>Price: Rs. ' . $product['price'] . '</h4>
-                    <button onclick="showProductDetails(' . $product['id'] . ')">More Details</button>
-                </div>
-            </div>
-        ';
-    }
-    return $productDetailsHtml;
+                    // Break after every 4 products
+                    if ($count % 4 == 0) {
+                        $productDetailsHtml .= '<div style="width: 100%; clear: both;"></div>'; // Clear float
+                    }
+                }
+                return $productDetailsHtml;
+            }
 
-
-}
-
-// Output the generated product details HTML
-echo generateproductDetailsHtml($products);
-?>
-
+            // Output the generated product details HTML
+            echo generateproductDetailsHtml($products);
+            ?>
         </div>
     </section>
-    
+
     <script>
         function showProductDetails(productId) {
             window.location.href = 'prodetail.php?id=' + productId;

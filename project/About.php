@@ -18,6 +18,21 @@ if(isset($_GET['logout'])) {
     <title>project</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="style.css">
+    <style>
+         /* Style for the logout button */
+ #nevbar li button {
+    background-color: red; /* Button background color */
+    color: white; /* Button text color */
+    padding: 8px 16px; /* Padding inside the button */
+    border: none; /* Remove button border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+#nevbar li button:hover {
+    background-color: darkred; /* Darker red on hover */
+}
+    </style>
     <script>
         function confirmLogout() {
             if(confirm("Are you sure you want to log out?")) {

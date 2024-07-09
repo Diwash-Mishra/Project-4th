@@ -5,6 +5,9 @@ if ($conn->connect_error) {
     die('Connection failed: ' . $conn->connect_error);
 }
 
+// Initialize $confirmation_message
+$confirmation_message = '';
+
 // Check if the user clicked the logout button
 if (isset($_GET['logout'])) {
     // Destroy the session
@@ -30,17 +33,30 @@ if (isset($_POST['buy'])) {
         $stmt->close();
 
         if ($product_id && $user_id && is_numeric($product_id) && is_numeric($user_id)) {
-            // Prepare and execute the insert statement
-            $stmt = $conn->prepare("INSERT INTO purchase_requests (product_id, user_id, status) VALUES (?, ?, 'pending')");
-            $stmt->bind_param('ii', $product_id, $user_id);
+            // Check if there is already a pending request for the product
+            $stmt = $conn->prepare("SELECT status FROM purchase_requests WHERE product_id = ? AND status = 'pending'");
+            $stmt->bind_param('i', $product_id);
             $stmt->execute();
+            $stmt->bind_result($status);
+            $stmt->fetch();
             $stmt->close();
-            echo "Purchase request submitted successfully.";
+
+            if ($status == 'pending') {
+                $confirmation_message = "This product already has a pending request.";
+            } else {
+                // Prepare and execute the insert statement
+                $stmt = $conn->prepare("INSERT INTO purchase_requests (product_id, user_id, status) VALUES (?, ?, 'pending')");
+                $stmt->bind_param('ii', $product_id, $user_id);
+                $stmt->execute();
+                $stmt->close();
+                // Set confirmation message
+                $confirmation_message = "You have successfully booked this product.";
+            }
         } else {
-            echo "Invalid request.";
+            $confirmation_message = "Invalid request.";
         }
     } else {
-        echo "User not logged in.";
+        $confirmation_message = "User not logged in.";
     }
 }
 ?>
@@ -90,24 +106,22 @@ if (isset($_POST['buy'])) {
         }
         
         #nevbar li a.active {
-            color: #3498db;
+            color: red;
         }
         
-        #nevbar li button {
-            background-color: #3498db;
-            color: #ffffff;
-            padding: 6px 10px;
-            font-size: 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        #nevbar li button:hover {
-            background-color: #2980b9;
-        }
+       /* Style for the logout button */
+ #nevbar li button {
+    background-color: red; /* Button background color */
+    color: white; /* Button text color */
+    padding: 8px 16px; /* Padding inside the button */
+    border: none; /* Remove button border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+#nevbar li button:hover {
+    background-color: darkred; /* Darker red on hover */
+}
         .single-pro-container {
              padding: 20px;
         }
@@ -142,6 +156,14 @@ if (isset($_POST['buy'])) {
         
         .single-pro-details button:hover {
             background-color: #2980b9;
+        }
+
+        .booking-confirmation {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e0f7fa;
+            border: 1px solid #80deea;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -185,10 +207,22 @@ if (isset($_POST['buy'])) {
         $stmt->close();
 
         // Function to generate product details HTML
-        function generateProductDetailsHtml($products) {
+        function generateProductDetailsHtml($products, $conn, $user_email, $confirmation_message) {
             $productDetailsHtml = '';
             foreach ($products as $product) {
                 $imageSrc = isset($product['image']) ? '../admin/images/' . $product['image'] : '';
+                
+                // Check if the product has any pending request
+                $stmt = $conn->prepare("SELECT status FROM purchase_requests WHERE product_id = ? AND status = 'pending'");
+                $stmt->bind_param('i', $product['id']);
+                $stmt->execute();
+                $stmt->bind_result($status);
+                $stmt->fetch();
+                $stmt->close();
+                
+                $buttonDisabled = $status === 'pending' ? 'disabled' : '';
+                $buttonText = $status === 'pending' ? 'Product Booked' : 'Book Product';
+
                 $productDetailsHtml .= '
                     <div class="single-pro-container">
                         <div class="single-pro-details">
@@ -200,10 +234,11 @@ if (isset($_POST['buy'])) {
                             <br><br><br>
                             Contact Us For More Details
                             <br><br>
-                            <form method="POST" action="">
+                            <form id="buyForm" method="POST" action="">
                                 <input type="hidden" name="product_id" value="' . $product['id'] . '">
-                                <button type="submit" name="buy">Book Product</button>
+                                <button type="submit" name="buy" ' . $buttonDisabled . '>' . $buttonText . '</button>
                             </form>
+                            ' . ($confirmation_message ? '<div class="booking-confirmation">' . $confirmation_message . '</div>' : '') . '
                         </div>
                         <div class="single-pro-image">
                             <img src="' . $imageSrc . '" alt="image">
@@ -215,11 +250,18 @@ if (isset($_POST['buy'])) {
         }
 
         // Output the generated product details HTML
-        echo generateProductDetailsHtml($products);
+        echo generateProductDetailsHtml($products, $conn, $_SESSION['username'], $confirmation_message);
     } else {
         echo 'Invalid product ID.';
     }
     ?>
     </section>
+    <script>
+    document.getElementById('buyForm').addEventListener('submit', function(event) {
+        if (!confirm("Are you sure you want to book the product?")) {
+            event.preventDefault(); // Prevent form submission if cancelled
+        }
+    });
+    </script>
 </body>
 </html>

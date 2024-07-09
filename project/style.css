@@ -4,6 +4,12 @@
     box-sizing: border-box;
     font-family: 'spartan',sans-serif;
 }
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
 h1{
     font-size: 50px;
     line-height: 64px;
@@ -79,20 +85,18 @@ body{
 #header li a.active{
     color: #f80a16;
 }
-#nevbar li button {
-    background-color: #3498db;
-    color: #ffffff;
-    padding: 6px 10px;
-    font-size: 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ /* Style for the logout button */
+ #nevbar li button {
+    background-color: red; /* Button background color */
+    color: white; /* Button text color */
+    padding: 8px 16px; /* Padding inside the button */
+    border: none; /* Remove button border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
 }
 
 #nevbar li button:hover {
-    background-color: #2980b9;
+    background-color: darkred; /* Darker red on hover */
 }
 /* Css For Home page */
 
@@ -220,7 +224,6 @@ size: cover;
     color: #fff;
     background-color: #088178;
 }
-
 footer{
     display: flex;
     flex-wrap: wrap;
