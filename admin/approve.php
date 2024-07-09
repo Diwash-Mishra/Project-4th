@@ -13,12 +13,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Fetch approved and rejected requests with product details
-    $stmt = $pdo->prepare("SELECT pr.id, p.productname, r.name,r.number,r.email, pr.status 
-                           FROM purchase_requests pr
-                           JOIN product p ON pr.product_id = p.id 
-                           JOIN registration r ON pr.user_id = r.id 
-                           WHERE pr.status IN ('completed', 'cancelled')
-                           ORDER BY pr.id"); // Order by purchase request ID
+    $stmt = $pdo->prepare("SELECT id, product_name, username, phone_number, email, status FROM approved_requests ORDER BY id");
     $stmt->execute();
     $approved_requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -107,9 +102,9 @@ try {
                 <?php foreach ($approved_requests as $request): ?>
                 <tr>
                     <td><?php echo $request['id']; ?></td>
-                    <td><?php echo $request['productname']; ?></td>
-                    <td><?php echo $request['name']; ?></td>
-                    <td><?php echo $request['number']; ?></td>
+                    <td><?php echo $request['product_name']; ?></td>
+                    <td><?php echo $request['username']; ?></td>
+                    <td><?php echo $request['phone_number']; ?></td>
                     <td><?php echo $request['email']; ?></td>
                     <td><?php echo $request['status']; ?></td>
                 </tr>
