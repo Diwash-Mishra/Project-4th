@@ -6,8 +6,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Assign the connection object to $db
-$db = $conn;
 
 require 'src/Exception.php'; 
 require 'src/PHPMailer.php';
@@ -29,7 +27,7 @@ if (isset($_POST['submit'])) {
 
     // Validate email existence
     $check_email_sql = "SELECT * FROM registration WHERE Email = ?";
-    $check_stmt = $db->prepare($check_email_sql);
+    $check_stmt = $conn->prepare($check_email_sql);
     $check_stmt->bind_param("s", $email);
     $check_stmt->execute();
     $result = $check_stmt->get_result();
@@ -55,10 +53,10 @@ if (isset($_POST['submit'])) {
 
     // Update database with reset token and expiry time
     $sql = "UPDATE registration SET reset_token=?, reset_token_hash=?, reset_token_expires_at=? WHERE Email=?";
-    $stmt = $db->prepare($sql);
+    $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
-        die('Prepare failed: ' . htmlspecialchars($db->error));
+        die('Prepare failed: ' . htmlspecialchars($conn->error));
     }
 
     $bind = $stmt->bind_param("ssss", $token, $token_hash, $expires_at, $email);
@@ -86,9 +84,9 @@ if (isset($_POST['submit'])) {
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'itspuranopasal@gmail.com';
-        $mail->Password = 'puranopasal9825';
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port = 465;
+        $mail->Password = 'hioo edul qgoa wimz';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
 
         // Recipients
         $mail->setFrom('puranopasal@gmail.com', 'Purano Pasal');
@@ -101,7 +99,7 @@ if (isset($_POST['submit'])) {
         // Content
         $mail->isHTML(true);
         $mail->Subject = 'Password Reset';
-        $mail->Body    = "Click <a href='http://localhost/library/student/reset_password.php?token=$token'>here</a> to reset your password. This link will expire in 15 minutes.";
+        $mail->Body    = "Click <a href='http://localhost/combine/project/reset_password.php?token=$token'>here</a> to reset your password. This link will expire in 15 minutes.";
 
         $mail->send();
         echo "

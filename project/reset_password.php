@@ -11,7 +11,7 @@ date_default_timezone_set('Asia/Kathmandu');
 if(isset($_GET['token'])) {
     $token = $_GET['token'];
     $sql = "SELECT Email, reset_token_hash, reset_token_expires_at FROM registration WHERE reset_token = ?";
-    $stmt = $db->prepare($sql);
+    $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -34,12 +34,12 @@ if(isset($_GET['token'])) {
 
                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                 $sql = "UPDATE registration SET password=?, reset_token=NULL, reset_token_hash=NULL, reset_token_expires_at=NULL WHERE Email=?";
-                $stmt = $db->prepare($sql);
+                $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ss", $hashed_password, $email);
                 $stmt->execute();
 
                 echo '<script>alert("Your password has been reset successfully.");</script>';
-                header("Location: studentlogin.php");
+                header("Location: index.php");
                 exit; // Make sure to exit after redirection
             }
         } else {
