@@ -16,7 +16,7 @@ if($conn-> connect_error){
     die('connection failed:' .$conn->connect_error);
 }else{
     $stmt = $conn-> prepare("insert into registration(name, email, number, password, dob, country,gender)values(?,?,?,?,?,?,?)");
-    $stmt-> bind_param("ssisiss", $name,$email,$number,$hashed_password,$dob,$country,$gender);
+    $stmt-> bind_param("ssissss", $name,$email,$number,$hashed_password,$dob,$country,$gender);
    if( $stmt->execute()){
         echo "Your account is created";
         header("location:index.php");
