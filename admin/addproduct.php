@@ -110,9 +110,10 @@ input#submit{
             <ul id="nevbar">
                 <li><a href="user_message.php">User Message</a></li> <br>
                 <li><a href="addproduct.php">Add Products</a></li><br>
-                <li><a href="productinfo.php">Product Info</a></li><br>
-                <li><a href="booked.php">Booked Info</a></li><br>
-                <li><a href="approve.php">Approved Info</a></li><br>
+                <li><a href="productinfo.php">Products</a></li><br>
+                <li><a href="booked.php">Book Request</a></li><br>
+                <li><a href="approve.php">Booked Info</a></li><br>
+                <li><a href="sold_product.php">Sold</a></li><br>
                 <li>
                     <a href="logout.php">Log Out</a>
                 </li>

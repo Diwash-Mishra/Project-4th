@@ -109,40 +109,42 @@ if (isset($_POST['buy'])) {
             color: red;
         }
         
-       /* Style for the logout button */
- #nevbar li button {
-    background-color: red; /* Button background color */
-    color: white; /* Button text color */
-    padding: 8px 16px; /* Padding inside the button */
-    border: none; /* Remove button border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Change cursor to pointer */
-}
+        /* Style for the logout button */
+        #nevbar li button {
+            background-color: red; /* Button background color */
+            color: white; /* Button text color */
+            padding: 8px 16px; /* Padding inside the button */
+            border: none; /* Remove button border */
+            border-radius: 4px; /* Rounded corners */
+            cursor: pointer; /* Change cursor to pointer */
+        }
 
-#nevbar li button:hover {
-    background-color: darkred; /* Darker red on hover */
-}
+        #nevbar li button:hover {
+            background-color: darkred; /* Darker red on hover */
+        }
+        
         .single-pro-container {
-             padding: 20px;
+            padding: 20px;
         }
-        .single-pro-image img{
-         width: 40%;
-         margin-top:-20%
+        
+        .single-pro-image img {
+            width: 40%;
+            margin-top: -20%;
         }
-.single-pro-details{
-    margin-left: 60%;
-    
-}
-.single-pro-details h2{
-    font-size: 26px;
-}
+        
+        .single-pro-details {
+            margin-left: 60%;
+        }
+        
+        .single-pro-details h2 {
+            font-size: 26px;
+        }
 
-#prodetail .single-pro-details span{
-    line-height: 25px;
-}
+        #prodetail .single-pro-details span {
+            line-height: 25px;
+        }
 
-
-        .single-pro-details button {
+        .btn {
             background-color: #3498db;
             color: #ffffff;
             padding: 6px 10px;
@@ -152,10 +154,16 @@ if (isset($_POST['buy'])) {
             cursor: pointer;
             transition: background-color 0.3s;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
         }
-        
-        .single-pro-details button:hover {
+
+        .btn:hover {
             background-color: #2980b9;
+        }
+
+        .btn[disabled] {
+            background-color: #95a5a6;
+            cursor: not-allowed;
         }
 
         .booking-confirmation {
@@ -236,7 +244,9 @@ if (isset($_POST['buy'])) {
                             <br><br>
                             <form id="buyForm" method="POST" action="">
                                 <input type="hidden" name="product_id" value="' . $product['id'] . '">
-                                <button type="submit" name="buy" ' . $buttonDisabled . '>' . $buttonText . '</button>
+                                <button type="submit" name="buy" class="btn" ' . $buttonDisabled . '>' . $buttonText . '</button>
+                                ' . ($buttonDisabled ? '' : '<a href="buy_product.php?id=' . $product['id'] . '" class="btn">Buy with eSewa</a>'
+) . '
                             </form>
                             ' . ($confirmation_message ? '<div class="booking-confirmation">' . $confirmation_message . '</div>' : '') . '
                         </div>
