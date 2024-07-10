@@ -3,59 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Product Information</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Table and button styles */
+        table {
+            width: 90%; /* Reduce table width */
+            margin: 20px auto; /* Center-align the table */
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        button:hover {
+            background-color: darkred;
+        }
+
+    </style>
 </head>
 <body>
-<section id="header">
+    <section id="header">
         <a href="#"><img src="Purano.png" class="logo" alt=""></a>
         <div>
             <ul id="nevbar">
-                <li><a  href="userinfo.php">User Information</a></li> <br>
-                <li><a  href="addproduct.php">Add Products</a></li><br>
-                <li><a class="active" href="productinfo.php">Product Info</a></li>
-                <li><button><a href="dash.php">Goto Dashboard </a></li></button>
+                <li><a href="user_message.php">User Message</a></li>
+                <li><a href="addproduct.php">Add Products</a></li>
+                <li><a href="productinfo.php">Product Info</a></li>
+                <li><a href="booked.php">Booked Info</a></li>
+                <li><a href="approve.php">Approved Info</a></li>
+                <li><a href="logout.php">Log Out</a></li>
             </ul>
         </div>
-    </section>  
-  <center>
+    </section>
 
-    <h2>Product Information</h2>
-
-  
-  <pre>
-    <table border="2">
-        <tr>
-            <th>S.N</th>
-            <th>Type</th>
-            <th>Product Name </th>
-            <th>Price </th>
-            <th>Image </th> 
-        </tr>
-        <?php
-        $i=1;
-        $con = new mysqli('localhost','root','','project');
-        $sql = "SELECT * FROM product";
-          if($result=mysqli_query($con,$sql)){
-            while($row=mysqli_fetch_assoc($result)){
-                echo "<tr>";
-                echo "<td>". $i++ ."</td>" ;
-                echo "<td>".$row['type']."</td>" ;
-                echo "<td>".$row['productname']."</td>" ;
-                echo "<td>".$row['price']."</td>" ;
-                echo "<td> <img src='images/".$row['image']."' height='100px'></td>";
-                echo "<td><a href=edit.php?id=".$row['id'].">Edit</td>";
-                echo '<td><a href="delete.php?id='.$row['id'] . '">Delete</a></td>';
-                //echo "<td>Edit Delete</td>";
-                echo "</tr>";
-
-              
+    <center>
+        <h2>Product Information</h2>
+        <table border="2">
+            <tr>
+                <th>S.N</th>
+                <th>Type</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+            <?php
+            $i = 1;
+            $con = new mysqli('localhost', 'root', '', 'project');
+            $sql = "SELECT * FROM product";
+            if ($result = mysqli_query($con, $sql)) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<tr>";
+                    echo "<td>" . $i++ . "</td>";
+                    echo "<td>" . $row['type'] . "</td>";
+                    echo "<td>" . $row['productname'] . "</td>";
+                    echo "<td>" . $row['price'] . "</td>";
+                    echo "<td><img src='images/" . $row['image'] . "' height='100px'></td>";
+                    echo "<td><a href='edit.php?id=" . $row['id'] . "'><button>Edit</button>&ensp;&ensp;</a>";
+                    echo "<a href='delete.php?id=" . $row['id'] . "'><button>Delete</button></a></td>";
+                    echo "</tr>";
+                }
             }
-
-          }
-          ?>
-</table>
-  </pre>
-  </center>
+            ?>
+        </table>
+    </center>
 </body>
 </html>

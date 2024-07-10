@@ -16,7 +16,7 @@ if(isset($_SESSION['username'])){
         <a href="#"><img src="Purano.png" class="logo" alt=""></a>
         <div>
             <ul id="nevbar">
-                <li><a href="userinfo.php">User Information</a></li> <br>
+                <li><a href="user_message.php">User Message</a></li> <br>
                 <li><a href="addproduct.php">Add Products</a></li><br>
                 <li><a href="productinfo.php">Product Info</a></li><br>
                 <li><a href="booked.php">Booked Info</a></li><br>

@@ -108,10 +108,14 @@ input#submit{
         <a href="#"><img src="Purano.png" class="logo" alt=""></a>
         <div>
             <ul id="nevbar">
-                <li><a  href="userinfo.php">User Information</a></li> <br>
-                <li><a class="active" href="addproduct.php">Add Products</a></li><br>
-                <li><a href="productinfo.php">Product Info</a></li>
-               <li> <button><a href="dash.php">Goto Dashboard </a></button></li>
+                <li><a href="user_message.php">User Message</a></li> <br>
+                <li><a href="addproduct.php">Add Products</a></li><br>
+                <li><a href="productinfo.php">Product Info</a></li><br>
+                <li><a href="booked.php">Booked Info</a></li><br>
+                <li><a href="approve.php">Approved Info</a></li><br>
+                <li>
+                    <a href="logout.php">Log Out</a>
+                </li>
             </ul>
         </div>
     </section>
@@ -139,3 +143,4 @@ input#submit{
     </center>
 </body>
 </html>
+<?php

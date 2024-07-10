@@ -1,14 +1,78 @@
 <?php
 session_start();
 
+// Database configuration
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "project";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Initialize variables and error array
+$name = $email = $number = $subject = $message = "";
+$errors = [];
+$successMessage = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Validate and sanitize inputs
+    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+    $number = filter_input(INPUT_POST, 'number', FILTER_SANITIZE_STRING);
+    $subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING);
+    $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
+
+    if (!$name) {
+        $errors[] = "Please enter your name.";
+    }
+    if (!$email) {
+        $errors[] = "Please enter a valid email address.";
+    }
+    if (strlen($number) != 10) {
+        $errors[] = "Please enter a valid 10-digit phone number.";
+    }
+    if (!$subject) {
+        $errors[] = "Please enter the subject.";
+    }
+    if (!$message) {
+        $errors[] = "Please write your message.";
+    }
+
+    if (empty($errors)) {
+        // Prepare and bind
+        $stmt = $conn->prepare("INSERT INTO message_of_customer (name, email, number, subject, message) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssiss", $name, $email, $number, $subject, $message);
+
+        if ($stmt->execute()) {
+            $successMessage = "Message successfully sent!";
+            // Clear the form fields
+            $name = $email = $number = $subject = $message = "";
+        } else {
+            $errors[] = "Error: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
+    }
+}
+
 // Check if the user clicked the logout button
-if(isset($_GET['logout'])) {
+if (isset($_GET['logout'])) {
     // Destroy the session
     session_destroy();
-    // Redirect to the logout page
-    header("Location: logout.php");
-    exit; // Ensure that no further code is executed after the redirect
+    // Redirect to index.php
+    header("Location: index.php");
+    exit;
 }
+
+// Close the database connection
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -19,19 +83,19 @@ if(isset($_GET['logout'])) {
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="style.css">
     <style>
-         /* Style for the logout button */
- #nevbar li button {
-    background-color: red; /* Button background color */
-    color: white; /* Button text color */
-    padding: 8px 16px; /* Padding inside the button */
-    border: none; /* Remove button border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Change cursor to pointer */
-}
+        /* Style for the logout button */
+        #nevbar li button {
+            background-color: red; /* Button background color */
+            color: white; /* Button text color */
+            padding: 8px 16px; /* Padding inside the button */
+            border: none; /* Remove button border */
+            border-radius: 4px; /* Rounded corners */
+            cursor: pointer; /* Change cursor to pointer */
+        }
 
-#nevbar li button:hover {
-    background-color: darkred; /* Darker red on hover */
-}
+        #nevbar li button:hover {
+            background-color: darkred; /* Darker red on hover */
+        }
     </style>
     <script>
         function confirmLogout() {
@@ -52,12 +116,11 @@ if(isset($_GET['logout'])) {
                 <li><a class="active" href="Contact.php">Contact</a></li>
                 <?php
                 // Check if user is logged in
-                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin']==true){
-                    echo  $_SESSION['username'];
+                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                    echo "<li>".$_SESSION['username']."</li>";
+                    echo '<li><button onclick="confirmLogout()">Log Out</button></li>';
                 }
                 ?>
-                <br><li><button onclick="confirmLogout()">Log Out</button></li>
-                <!-- Use the GET method to trigger the logout -->
             </ul>
         </div>
     </section>
@@ -97,24 +160,35 @@ if(isset($_GET['logout'])) {
     </section>
 
     <section id="form-details">
-        <form action="">
+        <form action="" method="post">
             <span>LEAVE A MESSAGE</span>
             <h2>We Love to hear from you</h2>
-            <input type="text" placeholder="Your Name">
-            <input type="email" placeholder="E-Mail">
-            <input type="text" placeholder="Subject">
-            <textarea name="" id="" cols="30" rows="10" placeholder="Write your Message Here"></textarea>
-            <button class="normal">Submit</button>
+            <?php
+            if (!empty($errors)) {
+                foreach ($errors as $error) {
+                    echo "<p style='color:red;'>$error</p>";
+                }
+            }
+            if ($successMessage) {
+                echo "<p style='color:green;'>$successMessage</p>";
+            }
+            ?>
+            <input type="text" name="name" placeholder="Your Name" required value="<?php echo htmlspecialchars($name); ?>">
+            <input type="email" name="email" placeholder="E-Mail" required value="<?php echo htmlspecialchars($email); ?>">
+            <input type="text" name="number" placeholder="Number" required pattern="\d{10}" value="<?php echo htmlspecialchars($number); ?>">
+            <input type="text" name="subject" placeholder="Subject" required value="<?php echo htmlspecialchars($subject); ?>">
+            <textarea name="message" cols="30" rows="10" placeholder="Write your Message Here" required><?php echo htmlspecialchars($message); ?></textarea>
+            <button type="submit" class="normal">Submit</button>
         </form>
         <div class="hamro-details">
             <div>
-            <img src="diwash.jpg" alt="">
-            <p><span>Diwash Mishra</span>Malik honi haha <br>Phone: 9825988376 <br>Email: Diwashmishra12345@gmail.com</p>
+                <img src="diwash.jpg" alt="">
+                <p><span>Diwash Mishra</span>Malik honi haha <br>Phone: 9825988376 <br>Email: Diwashmishra12345@gmail.com</p>
             </div>
             <div>
                 <img src="puskar.jpg" alt="">
                 <p><span>Puskar Magar</span>Malik honi haha <br>Phone: 981-4333211 <br>Email: Puskarmagar12345@gmail.com</p>
-                </div>
+            </div>
         </div>
     </section>
 
@@ -154,9 +228,8 @@ if(isset($_GET['logout'])) {
         <div class="install">
             <h4>Coming Soon</h4>
             <p>In PlayStore </p>
-             <div class="row">
-                <img  src="play.jpg" alt="">
-                
+            <div class="row">
+                <img src="play.jpg" alt="">
             </div>
             <p><strong> Gateway </strong></p>
             <img class="esewa" src="esewa.jpg" alt="">
@@ -165,6 +238,5 @@ if(isset($_GET['logout'])) {
             <p>Purano Pasal is Copyrighted under the Registrar of Copyright Act (Govt of Nepal) © 2000-2024</p>
         </div>
     </footer>
-
 </body>
 </html>
