@@ -1,0 +1,74 @@
+CREATE DATABASE project;
+
+USE project;
+
+-- Table: message_of_customer
+CREATE TABLE message_of_customer (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    number VARCHAR(20),
+    subject VARCHAR(255),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: approved_requests
+CREATE TABLE approved_requests (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255),
+    username VARCHAR(255),
+    phone_number VARCHAR(20),
+    email VARCHAR(255),
+    status VARCHAR(50),
+    approved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: purchase_requests
+CREATE TABLE purchase_requests (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    product_id INT(11),
+    user_id INT(11),
+    status ENUM('pending', 'completed', 'cancelled'),
+    FOREIGN KEY (product_id) REFERENCES product(id),
+    FOREIGN KEY (user_id) REFERENCES registration(id)
+);
+
+-- Table: sold_products
+CREATE TABLE sold_products (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255),
+    price DECIMAL(10,2),
+    esewa_id VARCHAR(100),
+    user_id INT(11),
+    user_name VARCHAR(255),
+    user_email VARCHAR(255),
+    user_number VARCHAR(20),
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: product
+CREATE TABLE product (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(255),
+    productname VARCHAR(255),
+    price DECIMAL(10,2),
+    detail TEXT,
+    image VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: registration
+CREATE TABLE registration (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    number VARCHAR(20),
+    password VARCHAR(255),
+    dob DATE,
+    country VARCHAR(100),
+    gender ENUM('male', 'female', 'other'),
+    reset_token VARCHAR(100),
+    reset_token_hash VARCHAR(255),
+    reset_token_expires_at DATETIME
+);
